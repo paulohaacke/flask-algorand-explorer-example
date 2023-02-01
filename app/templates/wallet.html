@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="border-bottom">
+	<h4 class="mb-0">
+		Wallet
+		<span class="text-size-address text-secondary text-break mr-1">{{ wallet_id }}</span>
+	</h4>
+</div>
+<div class="row">
+	<div class="col-6 main-content">
+		<div class="row h-100 align-items-center">
+			<div class="col-4">
+				Balance:
+			</div>
+			<div class="col-8">
+				{{ (wallet_balance ~ " Algo") if wallet_balance is defined else "Not Available" }}
+			</div>
+		</div>
+	</div>
+	<div class="col main-content">
+		<form method="post" class="row p-2">
+			<div class="col">
+				<input value="{{ set_password | default("") }}" name="password" type="password" class="form-control" id="walletPassword" placeholder="Password">
+			</div>
+			<div class="col-auto">
+				{% if set_password is defined %}
+				<button name="forgetPassword" type="submit" class="btn btn-danger">Forget Password</button>
+				{% else %}
+				<button name="setPassword" type="submit" class="btn btn-success">Set Password</button>
+				{% endif %}
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+	<div class="col main-content">
+		<fieldset {% if set_password is not defined %}disabled="disabled"{% endif %}>
+			<form method="post" class="row p-2">
+				<input value="{{ set_password | default("") }}" name="password" type="hidden" id="hiddenWalletPassword">
+				<div class="col">
+					<select name="transactionFrom" class="form-select">
+						<option selected>Select from account...</option>
+						{% for key in keys %}
+						<option value="{{ key['address'] }}">{{ key['address'] }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="col">
+					<input name="transactionTo" type="text" class="form-control" id="to" placeholder="To Account">
+				</div>
+				<div class="col">
+					<input name="transactionNote" type="text" class="form-control" id="note" placeholder="Note">
+				</div>
+				<div class="col">
+					<input name="transactionAmount" type="number" class="form-control" step="1" min="0" placeholder="Amount (microAlgos)">
+				</div>
+				<div class="col-auto">
+					<button name="sendTransaction" type="submit" class="btn btn-success">Send Transaction</button>
+				</div>
+			</form>
+		</fieldset>
+	</div>
+	<div class="col-auto main-content">
+		<fieldset {% if set_password is not defined %}disabled="disabled"{% endif %}>
+			<form method="post" class="row p-2">
+				<input value="{{ set_password | default("") }}" name="password" type="hidden" id="hiddenWalletPassword">
+				<div class="col-auto">
+					<button name="loadKeys" type="submit" class="btn btn-success">Load Keys</button>
+				</div>
+				<div class="col-auto">
+					<button name="generateKey" type="submit" class="btn btn-success">Generate Key</button>
+				</div>
+			</form>
+		</fieldset>
+	</div>
+</div>
+<div class="row">
+	<div class="col main-content">
+		<fieldset {% if set_password is not defined %}disabled="disabled"{% endif %}>
+			<form method="post" class="row p-2">
+				<input value="{{ set_password | default("") }}" name="password" type="hidden" id="hiddenWalletPassword">
+				<div class="col">
+					<select name="assetFrom" class="form-select">
+						<option selected>Select creator account...</option>
+						{% for key in keys %}
+						<option value="{{ key['address'] }}">{{ key['address'] }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="col">
+					<input name="assetName" type="text" class="form-control" id="note" placeholder="Name">
+				</div>
+				<div class="col">
+					<input name="assetUnit" type="text" class="form-control" id="note" placeholder="Unit">
+				</div>
+				<div class="col">
+					<input name="assetAmount" type="number" class="form-control" step="1" min="0" placeholder="Amount">
+				</div>
+				<div class="col-auto">
+					<button name="createAsset" type="submit" class="btn btn-success">Create Asset</button>
+				</div>
+			</form>
+		</fieldset>
+	</div>
+</div>
+<div class="row">
+	<div class="col main-content table-responsive">
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item" role="presentation">
+				<a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#keys">Keys</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#transactions">Transactions</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#assets">Assets</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="keys">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Address</th>
+							<th scope="col">Amount</th>
+							<th scope="col">Rewards</th>
+							<th scope="col">Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for key in keys %}
+						<tr>
+							<td>{{ key['address'] }}</td>
+							<td>{{ key['amount_str_formatted'] }} microAlgo</td>
+							<td>{{ key['rewards_str_formatted'] }} microAlgo</td>
+							<td>{{ key['status'] }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<div class="tab-pane fade" id="transactions">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Id</th>
+							<th scope="col">Type</th>
+							<th scope="col">Block</th>
+							<th scope="col">Timestamp</th>
+							<th scope="col">From</th>
+							<th scope="col">To</th>
+							<th scope="col">Amount</th>
+							<th scope="col">Fee</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for transaction in transactions %}
+						<tr>
+							<td>{{ transaction['id'] }}</td>
+							<td>{{ transaction['tx-type'] }}</td>
+							<td>{{ transaction['confirmed-round'] }}</td>
+							<td>{{ transaction['round-datetime'] }}</td>
+							<td>{{ transaction['sender'] }}</td>
+							<td>{{ transaction['calculated-receiver'] }}</td>
+							<td>{{ transaction['calculated-amount'] }}</td>
+							<td>{{ transaction['calculated-fee'] }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="border-bottom">
+	<h2>Accounts</h2>
+</div>
+<div class="row">
+	<div class="col main-content">
+		<form method="post" class="row p-2">
+			<div class="col">
+				<input name="minBalance" type="number" class="form-control" step="1" min="0" placeholder="Minimum Balance" value="{{ block | default("min_balance") }}">
+			</div>
+			<div class="col">
+				<input name="maxBalance" type="number" class="form-control" step="1" min="0" placeholder="Maximum Balance" value="{{ max_balance | default("") }}">
+			</div>
+			<div class="col-auto">
+				<button name="search" type="submit" class="btn btn-success">Search</button>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+	<div class="col main-content table-responsive">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Address</th>
+					<th scope="col">Amount</th>
+					<th scope="col">Rewards</th>
+					<th scope="col">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for key in keys %}
+				<tr>
+					<td>{{ key['address'] }}</td>
+					<td>{{ key['amount_str_formatted'] }} microAlgo</td>
+					<td>{{ key['rewards_str_formatted'] }} microAlgo</td>
+					<td>{{ key['status'] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+{% endblock %}

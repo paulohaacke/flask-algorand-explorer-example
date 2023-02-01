@@ -1,0 +1,6 @@
+icon: https://cdn.iconscout.com/icon/free/png-256/wallet-2130848-1794979.png
+deploy:
+  - okteto build -t okteto.dev/flask-app:latest .
+  - kubectl apply -f k8s
+devs:
+  - okteto.yml

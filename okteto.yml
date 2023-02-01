@@ -1,0 +1,15 @@
+name: algorand-flask-app
+labels:
+  app: algorand-flask-app
+image: paulohaacke/okteto-dev-python:3-buster
+autocreate: true
+command: bash
+persistentVolume:
+  enabled: false
+workdir: /workspace/app
+sync:
+- .:/workspace/app
+forward:
+- 5000:5000
+reverse:
+- 9000:9000

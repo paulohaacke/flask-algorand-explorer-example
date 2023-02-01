@@ -1,0 +1,12 @@
+body {
+	background: #f8f9fa;
+}
+
+.main-content {
+ 	margin: 15px;
+	background: white;
+}
+
+.text-size-address {
+	font-size: 80%;
+}

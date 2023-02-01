@@ -1,0 +1,136 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    dev.okteto.com/generate-host: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: algorand-private-network
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: algorand-private-network
+          servicePort: 8080
+        path: /participant(/|$)(.*)
+      - backend:
+          serviceName: algorand-private-network
+          servicePort: 8081
+        path: /relay(/|$)(.*)
+      - backend:
+          serviceName: algorand-private-network
+          servicePort: 8980
+        path: /indexer(/|$)(.*)
+      - backend:
+          serviceName: algorand-private-network
+          servicePort: 9080
+        path: /kmd(/|$)(.*)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: algorand-private-network
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-participant
+      port: 8080
+    - name: http-relay
+      port: 8081
+    - name: http-indexer
+      port: 8980
+    - name: http-kmd
+      port: 9080
+  selector:
+    app: algorand-private-network
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: algorand-private-network
+  labels:
+    app: algorand-private-network
+spec:
+  selector:
+    matchLabels:
+      app: algorand-private-network
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: algorand-private-network
+    spec:
+      volumes:
+      - name: network-config
+        configMap:
+          name: algorand-network
+      containers:
+      - name: algorand-private-network
+        image: paulohaacke/algorand-private-network:2-buster-slim
+        env:
+        - name: ALGORAND_INDEXER_NODES
+          value: "Participant"
+        - name: ALGORAND_KMD_NODES
+          value: "Participant"
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+        - containerPort: 8980
+        - containerPort: 9080
+        volumeMounts:
+        - name: network-config
+          mountPath: /etc/algorand
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: algorand-network
+data:
+  network.json: |
+    {
+      "Genesis": {
+        "NetworkName": "",
+        "Wallets": [
+          {
+            "Name": "Wallet1",
+            "Stake": 50,
+            "Online": true
+          },
+          {
+            "Name": "Wallet2",
+            "Stake": 40,
+            "Online": true
+          },
+          {
+            "Name": "Wallet3",
+            "Stake": 10,
+            "Online": false
+          }
+        ]
+      },
+      "Nodes": [
+        {
+          "Name": "Relay",
+          "IsRelay": true,
+          "Wallets": [
+            {
+              "Name": "Wallet1",
+              "ParticipationOnly": false
+            }
+          ]
+        },
+        {
+          "Name": "Participant",
+          "Wallets": [
+            {
+              "Name": "Wallet2",
+              "ParticipationOnly": false
+            },
+            {
+              "Name": "Wallet3",
+              "ParticipationOnly": false
+            }
+          ]
+        }
+      ]
+    }

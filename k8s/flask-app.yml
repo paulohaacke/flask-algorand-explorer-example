@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: algorand-flask-app
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 5000
+  selector:
+    app: algorand-flask-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: algorand-flask-app
+  labels:
+    app: algorand-flask-app
+spec:
+  selector:
+    matchLabels:
+      app: algorand-flask-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: algorand-flask-app
+    spec:
+      containers:
+      - name: algorand-flask-app
+        image: okteto.dev/flask-app:latest 
+        ports:
+        - containerPort: 5000

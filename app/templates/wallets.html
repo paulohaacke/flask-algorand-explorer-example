@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="border-bottom">
+	<h2>Wallets</h2>
+</div>
+<div class="row">
+	<div class="col main-content">
+		<form method="post" class="row p-2">
+			<div class="col">
+				<label for="walletName" class="visually-hidden">Name</label>
+				<input name="name" type="text" class="form-control" id="walletName" placeholder="Name">
+			</div>
+			<div class="col">
+				<label for="walletPassword" class="visually-hidden">Password</label>
+				<input name="password" type="password" class="form-control" id="walletPassword" placeholder="Password">
+			</div>
+			<div class="col-auto">
+				<button type="submit" class="btn btn-success">Create Wallet</button>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+	<div class="col main-content table-responsive">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Id</th>
+					<th scope="col">Name</th>
+					<th scope="col">Supported Transactions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for wallet in wallets %}
+				<tr>
+					<td><a href="/wallet/{{ wallet['id'] }}">{{ wallet['id'] }}</a></td>
+					<td>{{ wallet['name'] }}</td>
+					<td>{{ wallet['supported_txs'] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="border-bottom">
+	<h2>Transactions</h2>
+</div>
+<div class="row">
+	<div class="col main-content">
+		<form method="post" class="row p-2">
+			<div class="col">
+				<input name="address" type="text" class="form-control" step="1" min="0" placeholder="Account Address" value="{{ address | default("") }}">
+			</div>
+			<div class="col">
+				<input name="minAmount" type="number" class="form-control" step="1" min="0" placeholder="Minimum Amount" value="{{ min_amount | default("") }}">
+			</div>
+			<div class="col">
+				<input name="maxAmount" type="number" class="form-control" step="1" min="0" placeholder="Maximum Amount" value="{{ max_amount | default("") }}">
+			</div>
+			<div class="col-auto">
+				<button name="search" type="submit" class="btn btn-success">Search</button>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="row">
+	<div class="col main-content table-responsive">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Id</th>
+					<th scope="col">Type</th>
+					<th scope="col">Block</th>
+					<th scope="col">Timestamp</th>
+					<th scope="col">From</th>
+					<th scope="col">To</th>
+					<th scope="col">Amount</th>
+					<th scope="col">Fee</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for transaction in transactions %}
+				<tr>
+					<td>{{ transaction['id'] }}</td>
+					<td>{{ transaction['tx-type'] }}</td>
+					<td>{{ transaction['confirmed-round'] }}</td>
+					<td>{{ transaction['round-datetime'] }}</td>
+					<td>{{ transaction['sender'] }}</td>
+					<td>{{ transaction['calculated-receiver'] }}</td>
+					<td>{{ transaction['calculated-amount'] }}</td>
+					<td>{{ transaction['calculated-fee'] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+{% endblock %}
